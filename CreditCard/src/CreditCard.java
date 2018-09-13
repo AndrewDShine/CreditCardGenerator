@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class CreditCard
 	{
@@ -7,6 +8,8 @@ public class CreditCard
 		static Scanner userIntPut = new Scanner(System.in);
 		static long[] digits = new long[16];
 		static long[] otherAlts = new long[8];
+		static ArrayList<String> hundredNums = new ArrayList<String>();
+		
 		public static void main(String[] args)
 			{
 				// TODO Auto-generated method stub
@@ -23,10 +26,19 @@ public class CreditCard
 						addUpAndCheck();
 						break;
 					case 2:
+						long startTime = System.nanoTime();
 						for (int i = 0; i < 100; i++)
 							{
-								createCardNum();
+								hundredNums.add(createCardNum());
+								if (checkForRepeats(i))
+									{
+										i -= 1;
+									}
 							}
+						
+						
+						long endTime = System.nanoTime();
+						System.out.println("Took "+(endTime - startTime) + " ns");
 						break;
 					default:
 						break;
@@ -70,7 +82,7 @@ public class CreditCard
 					System.out.println("Sorry, but that number's not valid.");
 				}
 		}
-		public static void createCardNum()
+		public static String createCardNum()
 		{
 			int[] cardDigits = new int[16];
 			int fifteenSum = 0;
@@ -136,11 +148,32 @@ public class CreditCard
 							}
 						}
 				}
+			String fullNum = "";
 			for (int n : cardDigits)
 				{
 					System.out.print(n);
+					fullNum += n;
 				}
+			
 			System.out.print("\n");
+			return fullNum;
 			
 		}
+		public static boolean checkForRepeats(int arrayPos)
+			{
+				String numToTest = hundredNums.get(arrayPos);
+				for (int j = (hundredNums.size() - 2); j >= 0; j--)
+					{
+						if (numToTest.equals(hundredNums.get(j)))
+							{
+								return true;
+							}
+						else 
+							{
+								return false;
+							}
+					}
+				return false;
+				
+			}
 	}
