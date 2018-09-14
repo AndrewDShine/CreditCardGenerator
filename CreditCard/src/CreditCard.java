@@ -1,11 +1,13 @@
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.io.*;
 
 public class CreditCard
 	{
 
 		static Scanner userLongPut = new Scanner(System.in);
 		static Scanner userIntPut = new Scanner(System.in);
+		static Scanner userStringPut = new Scanner(System.in);
 		static long[] digits = new long[16];
 		static long[] otherAlts = new long[8];
 		static ArrayList<String> hundredNums = new ArrayList<String>();
@@ -15,7 +17,8 @@ public class CreditCard
 				// TODO Auto-generated method stub
 				System.out.println("What would you like to see? \n"
 						+ "1) Check a known card number \n"
-						+ "2) Generate 100 random numbers");
+						+ "2) Generate 100 random numbers \n"
+						+ "3) Check a file for correct numbers");
 				int userChoice = userIntPut.nextInt();
 				
 				switch (userChoice)
@@ -35,10 +38,14 @@ public class CreditCard
 										i -= 1;
 									}
 							}
+						writeHundredNums();
 						
 						
 						long endTime = System.nanoTime();
 						System.out.println("Took "+(endTime - startTime) + " ns");
+						break;
+					case 3:
+						testFileForCardNumbers();
 						break;
 					default:
 						break;
@@ -66,7 +73,7 @@ public class CreditCard
 				}
 			
 		}
-		public static void addUpAndCheck()
+		public static boolean addUpAndCheck()
 		{
 			long finalSum = 0;
 			for (int i = 0; i < digits.length; i++)
@@ -75,11 +82,13 @@ public class CreditCard
 				}
 			if((finalSum % 10) == 0)
 				{
-					System.out.println("That is a valid credit card number!");
+					//System.out.println("That is a valid credit card number!");
+					return true;
 				}
 			else
 				{
-					System.out.println("Sorry, but that number's not valid.");
+					//System.out.println("Sorry, but that number's not valid.");
+					return false;
 				}
 		}
 		public static String createCardNum()
@@ -151,29 +160,82 @@ public class CreditCard
 			String fullNum = "";
 			for (int n : cardDigits)
 				{
-					System.out.print(n);
 					fullNum += n;
 				}
-			
-			System.out.print("\n");
 			return fullNum;
 			
 		}
 		public static boolean checkForRepeats(int arrayPos)
 			{
+				int repeatsCounter = 0;
 				String numToTest = hundredNums.get(arrayPos);
 				for (int j = (hundredNums.size() - 2); j >= 0; j--)
 					{
 						if (numToTest.equals(hundredNums.get(j)))
 							{
-								return true;
+								repeatsCounter += 1;
 							}
-						else 
-							{
-								return false;
-							}
+					}
+				if (repeatsCounter > 0)
+					{
+						return true;
 					}
 				return false;
 				
 			}
+		public static void writeHundredNums()
+		{
+			String fileName = "potentialNums.txt";
+			
+			try
+				{
+					FileWriter fileWriter = new FileWriter(fileName, true);
+					BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+					
+					for (String n : hundredNums)
+						{
+							bufferedWriter.write(n + "\n");
+						}
+					bufferedWriter.close();
+				}
+			catch(IOException ex)
+				{
+					System.out.println("Ran into a problem writing to " + fileName);
+				}
+		}
+		public static void testFileForCardNumbers()
+		{
+			System.out.println("What is the exact filename you'd like to read from?");
+			String fileName = userStringPut.nextLine();
+			String line = null;
+			long num = 0;
+			int counter = 0;
+			
+			try
+				{
+					FileReader fileReader = new FileReader(fileName);
+					BufferedReader bufferedReader = new BufferedReader(fileReader);
+					
+					while((line = bufferedReader.readLine()) != null)
+						{
+							num = Long.parseLong(line);
+							digits = new long[16];
+							doubAltDigits(num);
+							if(addUpAndCheck())
+								{
+									counter += 1;
+								}
+						}
+					bufferedReader.close();
+				}
+			catch(FileNotFoundException ex)
+				{
+					System.out.println("Unable to open " + fileName);
+				}
+			catch(IOException ex)
+				{
+					System.out.println("Error reading " + fileName);
+				}
+			System.out.println("The program found "+counter+" valid credit card numbers!");
+		}
 	}
