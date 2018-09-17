@@ -9,7 +9,6 @@ public class CreditCard
 		static Scanner userIntPut = new Scanner(System.in);
 		static Scanner userStringPut = new Scanner(System.in);
 		static long[] digits = new long[16];
-		static long[] otherAlts = new long[8];
 		static ArrayList<String> hundredNums = new ArrayList<String>();
 		
 		public static void main(String[] args)
@@ -24,7 +23,7 @@ public class CreditCard
 				switch (userChoice)
 				{
 					case 1:
-						long cardNum = takeNumber();
+						String cardNum = takeNumber();
 						doubAltDigits(cardNum);
 						addUpAndCheck();
 						break;
@@ -51,17 +50,17 @@ public class CreditCard
 						break;
 				}
 			}
-		public static long takeNumber()
+		public static String takeNumber()
 		{
 			System.out.println("What credit card number would you like to check?");
-			return userLongPut.nextLong();
+			return userStringPut.nextLine();
 		}
-		public static void doubAltDigits(long cardNum)
+		public static void doubAltDigits(String cardNum)
 		{
-			for (int i = (digits.length-1); i >= 0; i--)
+			for (int i = 0; i < digits.length; i++)
 				{
-					digits[i] = cardNum % 10;
-					cardNum /= 10;
+					digits[i] = Long.parseLong(cardNum.substring(i, i + 1));
+					
 				}
 			for (int i = 0; i < 16; i+=2)
 				{
@@ -208,7 +207,7 @@ public class CreditCard
 			System.out.println("What is the exact filename you'd like to read from?");
 			String fileName = userStringPut.nextLine();
 			String line = null;
-			long num = 0;
+			String num = null;
 			int counter = 0;
 			
 			try
@@ -218,7 +217,7 @@ public class CreditCard
 					
 					while((line = bufferedReader.readLine()) != null)
 						{
-							num = Long.parseLong(line);
+							num = line;
 							digits = new long[16];
 							doubAltDigits(num);
 							if(addUpAndCheck())
